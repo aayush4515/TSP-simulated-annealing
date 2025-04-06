@@ -18,7 +18,6 @@ void simulateAnnealing(vector<City> destinationCities, double temperature, doubl
     random_device rd;  // seed source
     mt19937 g(rd()); // Mersenne Twister RNG
     uniform_real_distribution<> dis(0.0, 1.0); // range [0.0, 1.0)
-    double random_double = dis(g);
 
     initial.generateInitialTour(destinationCities);
     int initialDistance = initial.getTotalDistance();
@@ -39,7 +38,7 @@ void simulateAnnealing(vector<City> destinationCities, double temperature, doubl
         int currDistance = 0;
         int newDistance = 0;
 
-        srand(time(0));
+        //srand(time(0));
         int n = newSolution.tourSize();
         int i = rand() % n;
         int j = rand() % n;
@@ -56,24 +55,40 @@ void simulateAnnealing(vector<City> destinationCities, double temperature, doubl
         currDistance = currentSolution.getTotalDistance();
         newDistance = newSolution.getTotalDistance();
 
+        // generate a random number every iteration
+        double random_double = dis(g);
+
         // calculate the acceptance probability
         double acceptanceProbability = exp((-1.0 * (newDistance - currDistance)) / temperature);
 
         // update the best to currentSolution if currDistance > bestDistance
-        if (newDistance - currDistance < 0) {
-            currentSolution = newSolution;
-            delete best;
-            best = new Tour(currentSolution.getTour());
-        }
-        // accept the new solution if the acceptance probability is greater than the above generated random double in (0,1)
-        else if (acceptanceProbability > random_double) {
+        // if (newDistance - currDistance < 0) {
+        //     currentSolution = newSolution;
+        //     delete best;
+        //     best = new Tour(currentSolution.getTour());
+        //     numSolutionsAccepted ++;
+        // }
+        // // accept the new solution if the acceptance probability is greater than the above generated random double in (0,1)
+        // else if (acceptanceProbability > random_double) {
+        //     currentSolution = newSolution;
+        //     delete best;
+        //     best = new Tour(currentSolution.getTour());
+        //     numSolutionsAccepted ++;
+        // }
+
+        if (acceptanceProbability > random_double) {
             currentSolution = newSolution;
             numSolutionsAccepted ++;
         }
-        temperature = temperature * coolingRate;
+
+        if (currentSolution.getTotalDistance() < best->getTotalDistance()) {
+            delete best;
+            best = new Tour(currentSolution.getTour());
+        }
+        temperature *= 1 - coolingRate;
     }
 
-    cout << "\nNumber of new states tested: " << numSolutionsTested << endl;
+    cout << "\n\n\nNumber of new states tested: " << numSolutionsTested << endl;
     cout << "\nNumber of new states accepted: " << numSolutionsAccepted << endl;
     int finalDistance = best->getTotalDistance();
     cout << "\n\nFinal solution distance: " << finalDistance << endl;

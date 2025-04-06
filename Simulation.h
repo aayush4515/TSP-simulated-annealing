@@ -5,20 +5,14 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <random>
 #include "City.h"
 #include "Tour.h"
-#include <cstdlib>
-#include <ctime>
+#include "random.h"
+
 using namespace std;
 
 void simulateAnnealing(vector<City> destinationCities, double temperature, double coolingRate) {
     Tour initial(destinationCities);
-    // generate a random double between 0 and 1
-    random_device rd;  // seed source
-    mt19937 g(rd()); // Mersenne Twister RNG
-    uniform_real_distribution<> dis(0.0, 1.0); // range [0.0, 1.0)
-
     initial.generateInitialTour(destinationCities);
     int initialDistance = initial.getTotalDistance();
     cout << "\nInitial solution distance: " << initialDistance << endl;
@@ -26,8 +20,6 @@ void simulateAnnealing(vector<City> destinationCities, double temperature, doubl
 
     // create a current solution; tour object
     Tour currentSolution(initial.getTour());
-    // cout << "\n\nPrint for testing" << endl << endl;
-    // currentSolution.printTour();
 
     Tour* best = new Tour(currentSolution.getTour());
     int numSolutionsTested = 0;
@@ -38,13 +30,12 @@ void simulateAnnealing(vector<City> destinationCities, double temperature, doubl
         int currDistance = 0;
         int newDistance = 0;
 
-        //srand(time(0));
-        int n = newSolution.tourSize();
-        int i = rand() % n;
-        int j = rand() % n;
+        // indices for swapping
+        int i = 0;
+        int j = 0;
 
-        // check if i and j are same
-        while (i == j) j = rand() % n;
+        // randomize indices
+        randomNumber (i, j, newSolution.tourSize());
 
         // swap two cities in newSolution
         swap(newSolution.getTour()[i], newSolution.getTour()[j]);

@@ -39,7 +39,7 @@ void simulateAnnealing(vector<City> destinationCities, double temperature, doubl
         int currDistance = 0;
         int newDistance = 0;
 
-        //srand(time(0));
+        srand(time(0));
         int n = newSolution.tourSize();
         int i = rand() % n;
         int j = rand() % n;
